@@ -17,8 +17,8 @@
       - `H` **H**istory 打开历史
       - `E` **E**xtension打开插件管理页面
     
-    以上标签只能在Web页面中使用，在Chrome的 Custom Uri Tab下无法使用。另外，在插件设计页面最底部，可以设置全局快捷键，如下图： 
-[录屏](https://ooo.0o0.ooo/2017/01/25/5888a57e25d0a.jpg)
+    以上标签只能在Web页面中使用，在Chrome的 Custom Uri Tab下无法使用。另外，在插件设计页面最底部，可以设置全局快捷键， 
+[如图](https://ooo.0o0.ooo/2017/01/25/5888a57e25d0a.jpg)
 
 4. 禁用Google搜索结果跳转
 [录屏](https://ooo.0o0.ooo/2017/01/25/5888a7a5ca050.jpg)
