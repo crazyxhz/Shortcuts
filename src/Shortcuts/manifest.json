@@ -1,0 +1,142 @@
+{
+  "manifest_version": 2,
+  "name": "Shortcuts",
+  "description": "增加了各种方便的chrome快捷键",
+  "version": "1.2.24",
+  "short_name": "Shortcuts",
+  "web_accessible_resources": [
+    "*"
+  ],
+  "icons": {
+    "16": "data/shortcut-icon.png",
+    "48": "data/shortcut-icon.png",
+    "128": "data/shortcut-icon.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "data/shortcut-icon.png",
+      "38": "data/shortcut-icon.png"
+    },
+    "default_title": "Shortcuts"
+  },
+  "author": "徐鸿至",
+  "background": {
+    "scripts": [
+      "script/bg.js"
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "proxy",
+    "webRequest",
+    "webRequestBlocking",
+    "browsingData",
+    "clipboardRead",
+    "clipboardWrite",
+    "*://*/*",
+    "unlimitedStorage",
+    "storage",
+    "notifications"
+  ],
+  "content_scripts": [
+    {
+      "all_frames": false,
+      "js": [
+        "script/api.js",
+        "script/all.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "run_at": "document_end",
+      "match_about_blank": true
+    },
+    {
+      "matches": [
+        "https://www.google.com/search?q=*",
+        "https://www.google.com/search?newwindow=*"
+      ],
+      "js": [
+        "script/google.js"
+      ]
+    },
+    {
+      "matches": [
+        "http://*.jd.com/*",
+        "https://*.jd.com/*"
+      ],
+      "js": [
+        "script/jq.js",
+        "script/jd.js"
+      ]
+    }
+  ],
+  "commands": {
+    "ext": {
+      "description": "Extension Page",
+      "suggested_key": {
+        "default": "Alt+X"
+      }
+    },
+    "home": {
+      "description": "Home Page",
+      "suggested_key": {
+        "default": "Alt+W"
+      }
+    },
+    "left": {
+      "description": "Go to Left Page",
+      "suggested_key": {
+        "default": "Ctrl+Left"
+      }
+    },
+    "right": {
+      "description": "Go to Right Page",
+      "suggested_key": {
+        "default": "Ctrl+Right"
+      }
+    },
+    "closeright": {
+      "description": "Close pages to the right"
+    },
+    "closeleft": {
+      "description": "Close pages to the left"
+    },
+    "duplicate": {
+      "description": "Duplicate current tab"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
