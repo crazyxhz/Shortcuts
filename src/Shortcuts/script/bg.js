@@ -132,6 +132,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     else if (request.image) {
         uploadb64(request.image)
+        // uploadFile(request.image)
     }
 // return true;
 })
@@ -196,67 +197,60 @@ function uploadb64(base64) {
             body.removeChild(copyFrom);
         }))
 }
-
-chrome.browserAction.onClicked.addListener(function (tab) {
-    setUpPasteAndFileInput(function (e) {
-        for (var i = 0; i < e.clipboardData.items.length; i++) {
-            if (e.clipboardData.items[i].kind == "file" && e.clipboardData.items[i].type == "image/png") {
-
-                var imageFile = e.clipboardData.items[i].getAsFile();
-                var fileReader = new FileReader();
-                fileReader.onloadend = function () {
-                    uploadb64(this.result)
-                };
-                fileReader.readAsDataURL(imageFile);
-            }
-            else {
-                // var result = '出错了';
-                // var opt = {
-                //     type: "basic",
-                //     title: "剪贴板中不是图片，上传取消！",
-                //     message: result,
-                //     iconUrl: chrome.extension.getURL('data/shortcut-icon.png'),
-                //     buttons: [
-                //         {title: "剪贴板中不是图片，上传取消！"}
-                //     ]
-                // };
-                // new Audio("data/notify.mp3").play();
-                // chrome.notifications.create(result, opt, function (id) {
-                // });
-                chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                    chrome.tabs.executeScript(tabs[0].id, {file: "script/fileinput.js"});
-                });
-
-            }
-            break;
-        }
-    });
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        if (tabs[0].url.startsWith('http'))
-            document.execCommand('paste');
+function uploadFile(file) {
+    uploadImg(file, function (e) {
+        console.log(e)
+        var opt = {
+            type: "basic",
+            title: "已成功上传并复制URL到剪贴板！",
+            message: e.data.url,
+            iconUrl: e.data.url,
+            buttons: [
+                {title: "点我打开图片"}
+            ]
+        };
+        new Audio("data/notify.mp3").play();
+        chrome.notifications.create(e.data.url, opt, function (id) {
+        });
+        var copyFrom = document.createElement("textarea");
+        copyFrom.textContent = e.data.url;
+        var body = document.getElementsByTagName('body')[0];
+        body.appendChild(copyFrom);
+        copyFrom.select();
+        document.execCommand('copy');
+        body.removeChild(copyFrom);
+    })
+}
+document.onpaste = function (e) {
+    if (e.clipboardData.items.length) {
+        if (e.clipboardData.items[0].kind == "file" && e.clipboardData.items[0].type == "image/png")
+            uploadFile(e.clipboardData.items[0].getAsFile())
         else {
-            chrome.tabs.query({currentWindow: true}, function (tabs) {
-                tabs.some(function (e) {
-                    let isWebpage = e.url.startsWith('http');
-                    if (isWebpage) {
-                        chrome.tabs.update(e.id, {active: true});
-                        document.execCommand('paste');
-
-                    }
-                    return isWebpage
-                })
+            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                if (tabs[0].url.startsWith('http'))
+                    chrome.tabs.executeScript(tabs[0].id, {file: "script/fileinput.js"});
+                else {
+                    chrome.tabs.query({currentWindow: true}, function (tabs) {
+                        tabs.some(function (e) {
+                            let isWebpage = e.url.startsWith('http');
+                            if (isWebpage) {
+                                chrome.tabs.update(e.id, {active: true}, function () {
+                                    chrome.tabs.executeScript(e.id, {file: "script/fileinput.js"});
+                                });
+                            }
+                            return isWebpage
+                        })
+                    });
+                }
             });
         }
-    });
+    }
 
+};
 
+chrome.browserAction.onClicked.addListener(function () {
+    document.execCommand('paste');
 });
-
-function setUpPasteAndFileInput(pasteHandler) {
-    if (!document.onpaste)
-        document.onpaste = pasteHandler;
-}
-
 
 chrome.notifications.onClicked.addListener(function (a, b) {
     chrome.tabs.create({url: a}, function () {

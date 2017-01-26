@@ -30,7 +30,108 @@
 1. Chrome地址栏输入`chrome://extensions/`
 2. 选中Developer Mode，选择Load unpacked extension![](https://ooo.0o0.ooo/2017/01/26/5889466f6b2ff.jpg)
 3. 选择下载的Shortcuts文件夹
-  
-  
+
+##关键代码
+###鼠标悬浮查词
+递归查找TextNode，在TextNode上创建range，在TextNode上从0开始通过`range.expand("word")`查找单词，返回第一个结果。
+```javascript
+function getWordAtPoint(elem, x, y) {
+  if(elem.nodeType == elem.TEXT_NODE) {
+    var range = elem.ownerDocument.createRange();
+    range.selectNodeContents(elem);
+    var currentPos = 0;
+    var endPos = range.endOffset;
+    while(currentPos+1 < endPos) {
+      range.setStart(elem, currentPos);
+      range.setEnd(elem, currentPos+1);
+      if(range.getBoundingClientRect().left <= x && range.getBoundingClientRect().right  >= x &&
+         range.getBoundingClientRect().top  <= y && range.getBoundingClientRect().bottom >= y) {
+        range.expand("word");
+        var ret = range.toString();
+        range.detach();
+        return(ret);
+      }
+      currentPos += 1;
+    }
+  } else {
+    for(var i = 0; i < elem.childNodes.length; i++) {
+      var range = elem.childNodes[i].ownerDocument.createRange();
+      range.selectNodeContents(elem.childNodes[i]);
+      if(range.getBoundingClientRect().left <= x && range.getBoundingClientRect().right  >= x &&
+         range.getBoundingClientRect().top  <= y && range.getBoundingClientRect().bottom >= y) {
+        range.detach();
+        return(getWordAtPoint(elem.childNodes[i], x, y));
+      } else {
+        range.detach();
+      }
+    }
+  }
+  return(null);
+}    
+```
+###上传图片
+一般图床的REST API，接收的都是文件形式的表单
+Chrome 插件获取了clipboardRead权限之后，可以在background script中获取到剪贴板数据。这里分为两种情况：
+- 如果剪贴板中的内容是图片文件，则直接上传给图床接口
+- 如果剪贴板中不是图片文件，则需要弹出上传文件窗口，这种情况下又有两种分支
+  - 如果当前激活的窗口是Web页面，那么我们可以向当前页面注入脚本，模拟一个File Input的点击
+  - 如果当前激活的窗口不是Web页面，那么我们在当前窗口查找Web页面的Tab，激活该Tab，然后注入脚本
+```javascript
+document.onpaste = function (e) {
+    if (e.clipboardData.items.length) {
+        if (e.clipboardData.items[0].kind == "file" && e.clipboardData.items[0].type == "image/png")
+            uploadFile(e.clipboardData.items[0].getAsFile())
+        else {
+            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                if (tabs[0].url.startsWith('http'))
+                    chrome.tabs.executeScript(tabs[0].id, {file: "script/fileinput.js"});
+                else {
+                    chrome.tabs.query({currentWindow: true}, function (tabs) {
+                        tabs.some(function (e) {
+                            let isWebpage = e.url.startsWith('http');
+                            if (isWebpage) {
+                                chrome.tabs.update(e.id, {active: true}, function () {
+                                    chrome.tabs.executeScript(e.id, {file: "script/fileinput.js"});
+                                });
+                            }
+                            return isWebpage
+                        })
+                    });
+                }
+            });
+        }
+    }
+
+};
+
+chrome.browserAction.onClicked.addListener(function () {
+    document.execCommand('paste');
+});
+```
+
+`fileinput.js`文件内容
+```javascript
+var fileChooser = document.createElement("input");
+fileChooser.type = 'file';
+fileChooser.style.visibility = 'hidden'
+
+fileChooser.addEventListener('change', function (evt) {
+    var f = evt.target.files[0];
+    if (f) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            chrome.runtime.sendMessage({image: this.result});
+        }
+        reader.readAsDataURL(f);
+    }
+});
+
+document.body.appendChild(fileChooser);
+fileChooser.click();
+````
+Web页面注入脚本，当我们获取了文件之后，由于跨域问题，无法直接在Web页面中直接上传文件，需要通过Chrome API `chrome.runtime.sendMessage` 将文件数据传回给background Script进行上传。另外，需要通过`reader.readAsDataURL`把二进制文件序列化为base64的string
+
+
+
   
  
