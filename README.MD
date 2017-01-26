@@ -6,7 +6,8 @@
 [录屏](https://ooo.0o0.ooo/2017/01/25/58889f8f059f1.jpg)
 
 2. 快速上传图片，在剪贴板有图片的情况下，点击插件按钮，可以直接上传图片并且把图片URL复制到剪贴板。在剪贴板不是图片的情况下，自动弹出文件选择框，选择图片之后会自动上传图片并且把图片URL复制到剪贴板，支持GIF
-[录屏](https://ooo.0o0.ooo/2017/01/25/5888a7272bb5b.jpg)
+[剪贴板内容上传](https://ooo.0o0.ooo/2017/01/26/588944c686c79.jpg)
+[文件上传](https://ooo.0o0.ooo/2017/01/26/5889456c8b016.jpg)
 
 3. Tab快捷键（非文本输入框状态下）：
       - `X` 关闭其他Tab
@@ -25,6 +26,10 @@
 
 5. JD自动评价商品和订单
 
+##安装方法
+1. Chrome地址栏输入`chrome://extensions/`
+2. 选中Developer Mode，选择Load unpacked extension![](https://ooo.0o0.ooo/2017/01/26/5889466f6b2ff.jpg)
+3. 选择下载的Shortcuts文件夹
   
   
   
