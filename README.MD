@@ -1,4 +1,5 @@
 #Shortcuts Chrome效率插件
+[在线安装地址](https://chrome.google.com/webstore/detail/shortcuts/hmonocmajfgbpglgfoocnpnifcegpeef)
 ##Intro
 自己写着玩的Chrome插件，自己用的理念就是越简单越好，快捷键可能有些激进。功能列表如下：
 
