@@ -1,6 +1,6 @@
-#Shortcuts Chrome效率插件
+# Shortcuts Chrome效率插件
 [在线安装地址](https://chrome.google.com/webstore/detail/shortcuts/hmonocmajfgbpglgfoocnpnifcegpeef)
-##Intro
+## Intro
 自己写着玩的Chrome插件，自己用的理念就是越简单越好，快捷键可能有些激进。功能列表如下：
 
 1. 快速查单词，鼠标悬停或者选中任意单词，按下`Q`键，即可查词（`Esc`或者空白处点击关闭查词框）
@@ -27,13 +27,13 @@
 
 5. JD自动评价商品和订单
 
-##安装方法
+## 安装方法
 1. Chrome地址栏输入`chrome://extensions/`
 2. 选中Developer Mode，选择Load unpacked extension![](https://ooo.0o0.ooo/2017/01/26/5889466f6b2ff.jpg)
 3. 选择下载的Shortcuts文件夹
 
-##关键代码
-###鼠标悬浮查词
+## 关键代码
+### 鼠标悬浮查词
 递归查找TextNode，在TextNode上创建range，在TextNode上从0开始通过`range.expand("word")`查找单词，返回第一个结果。
 ```javascript
 function getWordAtPoint(elem, x, y) {
@@ -70,7 +70,7 @@ function getWordAtPoint(elem, x, y) {
   return(null);
 }    
 ```
-###上传图片
+### 上传图片
 一般图床的REST API，接收的都是文件形式的表单
 Chrome 插件获取了clipboardRead权限之后，可以在background script中获取到剪贴板数据。这里分为两种情况：
 - 如果剪贴板中的内容是图片文件，则直接上传给图床接口
